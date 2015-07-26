@@ -1,0 +1,25 @@
+{
+  "name": "accelleromood",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js & gulp"
+  },
+  "author": "Dan Zaharia",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.8.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^2.3.1",
+    "gulp-plumber": "^1.0.1",
+    "gulp-sass": "^2.0.4",
+    "gulp-scss-lint": "^0.2.2"
+  },
+  "dependencies": {
+    "express": "^4.13.1",
+    "express-handlebars": "^2.0.1"
+  }
+}
