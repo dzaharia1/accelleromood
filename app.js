@@ -9,6 +9,7 @@ var localport = '3333';
 var localhost = 'http://localhost';
 
 var currMayor = 0;
+var mode = 'rgb';
 
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -16,25 +17,48 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.engine('hbs', handlebars({ extname: 'hbs', defaultLayout: 'layout.hbs' }));
 app.set('view engine', 'hbs');
 
+io.set('polling duration', .5);
 io.on('connection', function(socket) {
 	console.log('received connection');
 
 	socket.on('change mayor', function(data) {
 		currMayor = data.clientId;
+		socket.broadcast.emit('change mayor', data);
 		console.log('The new mayor is ' + currMayor);
 	});
 
 	socket.on('change mode', function(data) {
-		if (data.clientId = currMayor) {
-			socket.emit('change mode', data);
-			console.log('Mode changed to ' + data.mode + ' by ' + data.clientId);
+		if (data.clientId === currMayor) {
+			if (mode === 'rgb') {
+				mode = 'hsl';
+			}
+			else {
+				mode = 'rgb';
+			}
 		}
 	});
 
 	socket.on('change color', function(data) {
-		if (data.clientId = currMayor) {
-			socket.emit('change color', data);
-			console.log('color changed by ' + data.clientId);
+		if (data.clientId === currMayor) {
+			var colorString = mode + '(';
+			var i, j, k;
+			if (mode === 'hsl') {
+				i = ((data.alpha / 360) * 360).toFixed(0);
+				j = (((data.beta + 180) / 360) * 100).toFixed(0);
+				k = (((data.gamma + 90) / 180) * 100).toFixed(0); // nothing very intetional here
+				if (k > 100) { k = 100; }
+				j = j + '%';
+				k = k + '%';
+			}
+			else if (mode === 'rgb') {
+				i = (data.alpha).toFixed(0);
+				j = (((data.beta + 180) / 360) * 256).toFixed(0);
+				k = (((data.gamma + 90) / 180) * 256).toFixed(0);
+			}
+
+			colorString = colorString + i + ', ' + k + ', ' + j + ')';
+			// console.log(data.clientId);
+			socket.broadcast.emit('change color', colorString);
 		}
 	});
 });
