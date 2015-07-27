@@ -29,7 +29,7 @@ var readyFunction = function() {
 			k = k + '%';
 		}
 		else if (mode === 'rgb') {
-			i = (event.alpha).toFixed(0);
+			i = ((event.alpha / 360) * 256).toFixed(0);
 			j = (((event.beta + 180) / 360) * 256).toFixed(0);
 			k = (((event.gamma + 90) / 180) * 256).toFixed(0);
 		}
