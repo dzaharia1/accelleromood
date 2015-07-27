@@ -1,48 +1,51 @@
-var siteBody, hexFigure, mode;
+var siteBody, hexFigure, indicator, uniqueId;
+var socket = io.connect(window.location.href);
+
+function generateId() {
+	var currentTime = new Date();
+	return (currentTime.getMilliseconds() / Math.random()).toFixed(0);
+}
 
 var readyFunction = function() {
-	mode = 'hsl';
 	siteBody = document.querySelector('body');
 	hexFigure = document.querySelector('.hex-figure');
-	var screenWidth = window.innerWidth;
-	var screenHeight = window.innerHeight;
+	indicator = document.querySelector('.tap-affordance');
+	uniqueId = generateId();
 
-	window.addEventListener('resize', function(event) {
-		screenWidth = window.innerWidth;
-		screenHeight = window.innerHeight;
+	socket.emit('change mayor', { clientId: uniqueId });
+
+	indicator.addEventListener('click', function() {
+		socket.emit('change mayor', { clientId: uniqueId });
 	});
 
 	window.addEventListener('click', function(event) {
-		if (mode === 'hsl') { mode = 'rgb'; }
-		else { mode = 'hsl'; }
+		socket.emit('change mode', { clientId: uniqueId });
 	});
 
 	window.addEventListener('deviceorientation', function(event) {
-		var colorString = mode + '(';
-		var i, j, k;
-		if (mode === 'hsl') {
-			i = ((event.alpha / 360) * 360).toFixed(0);
-			j = (((event.beta + 180) / 360) * 100).toFixed(0);
-			k = (((event.gamma + 90) / 180) * 100).toFixed(0); // nothing very intetional here
-			if (k > 100) { k = 100; }
-			j = j + '%';
-			k = k + '%';
-		}
-		else if (mode === 'rgb') {
-			i = ((event.alpha / 360) * 256).toFixed(0);
-			j = (((event.beta + 180) / 360) * 256).toFixed(0);
-			k = (((event.gamma + 90) / 180) * 256).toFixed(0);
-		}
-
-		colorString = colorString + i + ', ' + k + ', ' + j + ')';
-		console.log(colorString);
-
-		siteBody.style.backgroundColor = colorString;
-		hexFigure.style.color = 'hsl(0, 0%, ' + (100 - ((event.y / screenHeight) * 100)) + '%)';
-		hexFigure.innerText = colorString;
-
+		socket.emit('change color', {
+			alpha: event.alpha,
+			beta: event.beta,
+			gamma: event.gamma,
+			clientId: uniqueId
+		});
 	});
 }
+
+socket.on('change color', function(colorString) {
+	console.log(colorString);
+	siteBody.style.backgroundColor = colorString;
+	hexFigure.innerText = colorString;
+});
+
+socket.on('change mayor', function(mayorId) {
+	if (mayorId === uniqueId) {
+		indicator.innerText = 'You\'re controlling the color!';
+	}
+	else {
+		indicator.innerText = mayorId + ' is controlling the color';
+	}
+});
 
 if (document.readyState != 'loading') {
 	readyFunction();
