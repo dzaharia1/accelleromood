@@ -42,7 +42,7 @@ io.on('connection', function(socket) {
 			var colorString = mode + '(';
 			var i, j, k;
 			if (mode === 'hsl') {
-				i = ((data.alpha / 360) * 360).toFixed(0);
+				i = data.alpha.toFixed(0);
 				j = (((data.beta + 180) / 360) * 100).toFixed(0);
 				k = (((data.gamma + 90) / 180) * 100).toFixed(0); // nothing very intetional here
 				if (k > 100) { k = 100; }
@@ -50,7 +50,7 @@ io.on('connection', function(socket) {
 				k = k + '%';
 			}
 			else if (mode === 'rgb') {
-				i = (data.alpha).toFixed(0);
+				i = ((data.alpha / 360) * 256).toFixed(0);
 				j = (((data.beta + 180) / 360) * 256).toFixed(0);
 				k = (((data.gamma + 90) / 180) * 256).toFixed(0);
 			}
