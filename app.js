@@ -23,7 +23,6 @@ io.on('connection', function(socket) {
 
 	socket.on('change mayor', function(data) {
 		currMayor = data.clientId;
-		socket.broadcast.emit('change mayor', data);
 		console.log('The new mayor is ' + currMayor);
 	});
 
@@ -58,6 +57,7 @@ io.on('connection', function(socket) {
 
 			colorString = colorString + i + ', ' + k + ', ' + j + ')';
 			// console.log(data.clientId);
+			socket.emit('change color', colorString);
 			socket.broadcast.emit('change color', colorString);
 		}
 	});
