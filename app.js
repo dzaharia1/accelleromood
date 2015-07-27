@@ -23,6 +23,8 @@ io.on('connection', function(socket) {
 
 	socket.on('change mayor', function(data) {
 		currMayor = data.clientId;
+		socket.emit('change mayor', currMayor);
+		socket.broadcast.emit('change mayor', currMayor);
 		console.log('The new mayor is ' + currMayor);
 	});
 

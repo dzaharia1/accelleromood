@@ -1,4 +1,4 @@
-var siteBody, hexFigure, screenHeight, screenWidth, uniqueId;
+var siteBody, hexFigure, indicator, uniqueId;
 var socket = io.connect(window.location.href);
 
 function generateId() {
@@ -9,10 +9,14 @@ function generateId() {
 var readyFunction = function() {
 	siteBody = document.querySelector('body');
 	hexFigure = document.querySelector('.hex-figure');
+	indicator = document.querySelector('.tap-affordance');
 	uniqueId = generateId();
 
 	socket.emit('change mayor', { clientId: uniqueId });
-	document.querySelector('.tap-affordance').innerText = uniqueId;
+
+	indicator.addEventListener('click', function() {
+		socket.emit('change mayor', { clientId: uniqueId });
+	});
 
 	window.addEventListener('click', function(event) {
 		socket.emit('change mode', { clientId: uniqueId });
@@ -32,6 +36,15 @@ socket.on('change color', function(colorString) {
 	console.log(colorString);
 	siteBody.style.backgroundColor = colorString;
 	hexFigure.innerText = colorString;
+});
+
+socket.on('change mayor', function(mayorId) {
+	if (mayorId === uniqueId) {
+		indicator.innerText = 'You\'re controlling the color!';
+	}
+	else {
+		indicator.innerText = mayorId + ' is controlling the color';
+	}
 });
 
 if (document.readyState != 'loading') {
