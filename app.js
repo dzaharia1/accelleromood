@@ -58,8 +58,7 @@ io.on('connection', function(socket) {
 
 			colorString = colorString + i + ', ' + k + ', ' + j + ')';
 			// console.log(data.clientId);
-			socket.emit('change color', colorString);
-			socket.broadcast.emit('change color', colorString);
+			io.emit('change color', colorString);
 		}
 	});
 });
