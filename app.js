@@ -17,7 +17,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.engine('hbs', handlebars({ extname: 'hbs', defaultLayout: 'layout.hbs' }));
 app.set('view engine', 'hbs');
 
-io.set('polling duration', .5);
 io.on('connection', function(socket) {
 	console.log('received connection');
 
@@ -67,8 +66,6 @@ io.on('connection', function(socket) {
 
 app.host = app.set('host', process.env.HOST || localhost);
 app.port = app.set('port', process.env.PORT || localport);
-
-
 
 app.get('/', function(req, res) {
 	res.render('index');
